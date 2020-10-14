@@ -1,0 +1,57 @@
+<!doctype html>
+<htmL lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Date</title>
+<style>
+body{
+color:#ddd;
+background-color:#333;
+font-family:consolas;
+}
+</style>
+</head>
+<body>
+<video id="video" autoplay></video>&nbsp;<canvas id="canvas"></canvas><br>
+<div id="div0"></div>
+<div id="div1"></div>
+<button onclick="GO()">GO</button>
+
+<script>
+var div0=document.getElementById("div0");
+var div1=document.getElementById("div1");
+var wi=320,he=240;
+var constraints={audio:false,video:{width:wi,height:he}};navigator.mediaDevices.getUserMedia(constraints).then(success).catch(error);
+
+function success(stream){var video=document.getElementById("video");video.srcObject=stream;}
+function error(error){console.log(error);}
+
+var video=document.getElementById("video");
+var canvas=document.getElementById("canvas");
+var context=canvas.getContext("2d");
+var imageScore=0;
+var pixelScoreTreshold=290;
+
+canvas.width=wi;canvas.height=he;
+context.globalCompositeOperation="difference";
+//context.fillStyle="#000";
+//context.fillRect(0,0,wi,he);
+
+function GO(){setInterval(capture,100);}
+
+function capture(){
+
+context.drawImage(video,0,0,wi,he);
+
+var d=new Date();
+div0.innerHTML=d.getFullYear()+"-"+(d.getMonth()<10?"0":"")+d.getMonth()+"-"+(d.getDate()<10?"0":"")+d.getDate()+"_"+(d.getHours()<10?"0":"")+d.getHours()+"h"+(d.getMinutes()<10?"0":"")+d.getMinutes()+"m"+(d.getSeconds()<10?"0":"")+d.getSeconds()+"s";
+
+var imgData=context.getImageData(0,0,wi,he);
+var pixelScore=imgData.data[0]+imgData.data[1]+imgData.data[2];
+if(pixelScore>=pixelScoreTreshold){imageScore++;}
+div1.innerHTML=pixelScore+"<br>"+imageScore;
+}
+
+</script>
+</body>
+</html>
